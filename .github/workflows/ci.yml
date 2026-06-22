@@ -10,7 +10,8 @@ on:
     branches: [main]
 
 jobs:
-  verify:
+  # Schema-only gate: no secrets, no network. Always runs (incl. fork PRs).
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4          # GitHub-owned — exempt from SHA-pin (github/AGENTS.md rule 2)
@@ -19,5 +20,23 @@ jobs:
           python-version: "3.11"
       - name: Bootstrap
         run: make bootstrap
+      - name: Lint (schema only, no network)
+        run: make lint
+
+  # Full verify: needs VERCEL_TOKEN so `status: live` Vercel entries resolve via the
+  # API and pass Gate 1 (fail-closed). Without the token, live entries would fail by
+  # design — so this job carries the secret, mirroring compile-and-deploy.
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Bootstrap
+        run: make bootstrap
       - name: Verify (build + output schema)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TEAM: ${{ secrets.VERCEL_TEAM }}
         run: make verify
