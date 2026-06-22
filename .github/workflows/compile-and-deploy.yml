@@ -1,0 +1,49 @@
+name: Compile and Deploy
+
+# Cloned from prompt-registry/.github/workflows/compile-and-deploy.yml.
+# PR  -> validate only (make verify).
+# push to main -> validate + build + publish dist/ to GitHub Pages.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Bootstrap
+        run: make bootstrap
+      - name: Build + verify
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}   # never cleartext (github/AGENTS.md rule 3)
+          VERCEL_TEAM: ${{ secrets.VERCEL_TEAM }}
+        run: make verify
+      - name: Upload Pages artifact
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

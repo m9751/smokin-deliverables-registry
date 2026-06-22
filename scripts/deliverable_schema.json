@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DeliverableFrontmatter",
+  "type": "object",
+  "required": ["id", "title", "host", "kind", "status", "created"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9\\-]+$"
+    },
+    "title": { "type": "string", "minLength": 1 },
+    "host": {
+      "type": "string",
+      "enum": ["vercel", "github-pages", "custom"]
+    },
+    "url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["proposal", "campaign", "onboarding", "brief", "tool"]
+    },
+    "account": {
+      "type": "string",
+      "pattern": "^([a-z0-9\\-]+|none)$"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "summary": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["live", "draft", "retired"]
+    },
+    "created": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "host": { "const": "custom" } } },
+      "then": { "required": ["url"] }
+    }
+  ]
+}

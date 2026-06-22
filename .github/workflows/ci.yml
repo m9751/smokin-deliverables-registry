@@ -1,0 +1,23 @@
+name: CI
+
+# Playbook B Step 12a — CI mirrors the Makefile. If `make verify` passes locally,
+# CI must pass. Same commands, no separate rules.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4          # GitHub-owned — exempt from SHA-pin (github/AGENTS.md rule 2)
+      - uses: actions/setup-python@v5      # GitHub-owned — exempt
+        with:
+          python-version: "3.11"
+      - name: Bootstrap
+        run: make bootstrap
+      - name: Verify (build + output schema)
+        run: make verify

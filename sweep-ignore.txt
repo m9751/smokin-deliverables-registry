@@ -1,0 +1,9 @@
+# Non-deliverable projects the sweep bot must NOT flag as missing.
+# These are platform/app/infra projects, not customer deliverables.
+# One id (Vercel project / Pages repo slug) per line. Lines starting with # are comments.
+smokin-territory
+cms-api-hub
+aof-eval
+deliverables-registry
+prompt-registry
+smokin-decision-web

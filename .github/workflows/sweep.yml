@@ -1,0 +1,37 @@
+name: Sweep (safety net)
+
+# Component 2 (spec/design.md) — daily bot. Lists live Vercel + Pages, diffs
+# against the registry, opens a deduped GitHub issue for anything live-but-unfiled.
+# Honors sweep-ignore.txt. Never auto-writes a deliverable file.
+
+on:
+  schedule:
+    - cron: "17 13 * * *"   # daily ~13:17 UTC (off the :00 mark)
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Bootstrap
+        run: make bootstrap
+      - name: Build registry (need dist/ for the diff)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TEAM: ${{ secrets.VERCEL_TEAM }}
+        run: make build
+      - name: Run sweep
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_TEAM: ${{ secrets.VERCEL_TEAM }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+        run: python3 scripts/sweep.py
