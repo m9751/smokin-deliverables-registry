@@ -12,6 +12,10 @@ Start at [`spec/README.md`](spec/README.md). Common entry points:
 - [`spec/design.md`](spec/design.md) — full design + Grok/Codex review history.
 - [`README.md`](README.md) — Quick start, reading order, CI contract.
 
+## smokin-tracking-registry (sibling)
+
+Signal inventory lives in **[smokin-tracking-registry](https://github.com/m9751/smokin-tracking-registry)** → `INDEX.md` + `signals.csv`. This repo is **pages only** (`deliverables_latest.json` + `deliverables_latest.csv`). Do not add signal rows here.
+
 ## Key constraint
 
 **You edit the `.md`, the compiler owns `dist/`.** Edit `deliverables/<kind>/<id>.md`; run `make verify`; the compiler regenerates `dist/deliverables_latest.json` + `dist/index.html`. Never hand-edit `dist/` — it is overwritten on every build. And: **`status: live` is fail-closed** — a live entry with an unresolvable/unverified URL fails the build; use `status: draft` to pre-register.

@@ -19,6 +19,7 @@ Exit codes:
 """
 
 import argparse
+import csv
 import datetime
 import html
 import json
@@ -43,6 +44,7 @@ DIST_DIR = REPO_ROOT / "dist"
 FM_SCHEMA_PATH = REPO_ROOT / "scripts" / "deliverable_schema.json"
 OUT_SCHEMA_PATH = REPO_ROOT / "scripts" / "output_schema.json"
 LATEST_JSON = DIST_DIR / "deliverables_latest.json"
+LATEST_CSV = DIST_DIR / "deliverables_latest.csv"
 INDEX_HTML = DIST_DIR / "index.html"
 
 SCHEMA_VERSION = "1.0"
@@ -305,7 +307,21 @@ def write_outputs(payload: dict) -> None:
     LATEST_JSON.write_text(
         json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
+    _write_deliverables_csv(payload)
     INDEX_HTML.write_text(render_html(payload), encoding="utf-8")
+
+
+def _write_deliverables_csv(payload: dict) -> None:
+    fields = ["id", "title", "kind", "account", "status", "host", "url", "url_status", "tags", "summary", "created"]
+    rows = payload.get("deliverables") or []
+    with LATEST_CSV.open("w", encoding="utf-8", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
+        w.writeheader()
+        for d in rows:
+            row = dict(d)
+            if isinstance(row.get("tags"), list):
+                row["tags"] = ";".join(row["tags"])
+            w.writerow(row)
 
 
 def _safe_url(url) -> Optional[str]:
