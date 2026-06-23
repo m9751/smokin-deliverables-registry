@@ -53,13 +53,25 @@ def load_ignore():
 
 
 def filed_ids():
+    # Fail-closed: a missing/corrupt registry must NOT coerce to an empty filed set —
+    # that would make every live deliverable look "unfiled" and open a wave of false
+    # `missing:` issues. Stop instead. (Run `make build` first to produce the artifact.)
     if not LATEST_JSON.exists():
-        return set()
+        print(f"ERROR: {LATEST_JSON} not found — run `make build` before sweeping "
+              f"(refusing to treat all deliverables as unfiled)", file=sys.stderr)
+        sys.exit(1)
     try:
         data = json.loads(LATEST_JSON.read_text(encoding="utf-8"))
-        return {row["id"] for row in data.get("deliverables", [])}
-    except (json.JSONDecodeError, KeyError):
-        return set()
+    except json.JSONDecodeError as exc:
+        print(f"ERROR: {LATEST_JSON} is not valid JSON ({exc}) — refusing to sweep "
+              f"against a corrupt registry", file=sys.stderr)
+        sys.exit(1)
+    try:
+        return {row["id"] for row in data["deliverables"]}
+    except (KeyError, TypeError) as exc:
+        print(f"ERROR: {LATEST_JSON} missing 'deliverables'/'id' structure ({exc})",
+              file=sys.stderr)
+        sys.exit(1)
 
 
 def vercel_projects():
@@ -102,8 +114,25 @@ def _owner_from_repo_env():
     return owner or None
 
 
+def _resolve_owner_type(owner, headers):
+    """
+    Resolve whether `owner` is a User or Organization via GET /users/{owner}.
+    Returns "User", "Organization", or exits hard on failure — guessing the wrong
+    endpoint would silently drop Pages deliverables (the safety-net hole).
+    """
+    try:
+        r = requests.get(f"{GITHUB_API}/users/{owner}", headers=headers, timeout=15)
+    except requests.RequestException as exc:
+        print(f"ERROR: cannot resolve owner type for {owner}: {exc}", file=sys.stderr)
+        sys.exit(1)
+    if r.status_code != 200:
+        print(f"ERROR: GitHub /users/{owner} returned {r.status_code} — cannot resolve owner type",
+              file=sys.stderr)
+        sys.exit(1)
+    return r.json().get("type", "User")
+
+
 def _authenticated_login(headers):
-    """The login of the token's own account, or None on failure."""
     try:
         r = requests.get(f"{GITHUB_API}/user", headers=headers, timeout=15)
         if r.status_code == 200:
@@ -116,15 +145,20 @@ def _authenticated_login(headers):
 def _pages_endpoint(owner, headers):
     """
     Pick the listing endpoint that returns PUBLIC + PRIVATE repos the token can see.
-    - owner == authenticated user  -> /user/repos?affiliation=owner  (public + private)
-    - otherwise (org)              -> /orgs/{owner}/repos?type=all    (public + private the token can see)
-    The bare /users/{owner}/repos path returns PUBLIC ONLY, which would silently
-    drop private/org Pages deliverables — the exact safety-net hole this avoids.
+    Owner type is RESOLVED (GET /users/{owner}.type), not guessed.
+    - Organization               -> /orgs/{owner}/repos?type=all   (public + private the token sees)
+    - User == authenticated login -> /user/repos?affiliation=owner  (public + private)
+    - User != authenticated login -> /users/{owner}/repos (public only — best available;
+                                      a third party's private repos are not visible to this token anyway)
+    The bare public-only path is used ONLY for a different user, where nothing more is visible.
     """
+    otype = _resolve_owner_type(owner, headers)
+    if otype == "Organization":
+        return f"{GITHUB_API}/orgs/{owner}/repos", {"type": "all"}
     me = _authenticated_login(headers)
     if me and me.lower() == owner.lower():
         return f"{GITHUB_API}/user/repos", {"affiliation": "owner"}
-    return f"{GITHUB_API}/orgs/{owner}/repos", {"type": "all"}
+    return f"{GITHUB_API}/users/{owner}/repos", {}
 
 
 def pages_repos():
