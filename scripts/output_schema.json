@@ -26,7 +26,7 @@
           "status": { "type": "string", "enum": ["live", "draft", "retired"] },
           "created": { "type": "string" },
           "url": { "type": ["string", "null"] },
-          "url_source": { "type": "string", "enum": ["vercel-api", "formula", "hand-typed", "none"] },
+          "url_source": { "type": "string", "enum": ["vercel-api", "formula", "hand-typed", "github-pages", "none"] },
           "url_status": { "type": "string", "enum": ["resolved", "unresolved"] },
           "url_error": { "type": "string" },
           "source_file": { "type": "string" },
