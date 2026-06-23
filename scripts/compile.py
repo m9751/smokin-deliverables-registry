@@ -20,6 +20,7 @@ Exit codes:
 
 import argparse
 import datetime
+import html
 import json
 import os
 import re
@@ -307,21 +308,37 @@ def write_outputs(payload: dict) -> None:
     INDEX_HTML.write_text(render_html(payload), encoding="utf-8")
 
 
+def _safe_url(url) -> Optional[str]:
+    """Allow only http(s) URLs into href; reject javascript:/data:/etc. None = drop."""
+    if not isinstance(url, str):
+        return None
+    if not re.match(r"^https?://", url, re.IGNORECASE):
+        return None
+    return url
+
+
 def _link_cell(d: dict) -> str:
-    url = d.get("url")
+    url = _safe_url(d.get("url"))
     if not url:
         return "—"
-    return '<a href="' + url + '">link</a>'
+    # escape with quote=True so the URL cannot break out of the href attribute
+    return '<a href="' + html.escape(url, quote=True) + '">link</a>'
+
+
+def _esc(value) -> str:
+    return html.escape(str(value), quote=True)
 
 
 def render_html(payload: dict) -> str:
+    # Every dynamic field is HTML-escaped before interpolation (stored-XSS guard).
     rows_html = "\n".join(
         '<tr data-kind="{kind}" data-account="{account}" data-status="{status}">'
         "<td>{id}</td><td>{title}</td><td>{kind}</td>"
         "<td>{account}</td><td>{status}</td><td>{tags}</td><td>{link}</td></tr>".format(
-            kind=d["kind"], account=d.get("account", "none"), status=d["status"],
-            id=d["id"], title=d["title"], tags=", ".join(d.get("tags", [])),
-            link=_link_cell(d),
+            kind=_esc(d["kind"]), account=_esc(d.get("account", "none")), status=_esc(d["status"]),
+            id=_esc(d["id"]), title=_esc(d["title"]),
+            tags=_esc(", ".join(d.get("tags", []))),
+            link=_link_cell(d),  # already escaped internally
         )
         for d in payload["deliverables"]
     )
@@ -331,7 +348,7 @@ def render_html(payload: dict) -> str:
         "<style>body{font-family:system-ui;margin:2rem}table{border-collapse:collapse;width:100%}"
         "th,td{border:1px solid #ddd;padding:6px 10px;text-align:left;font-size:14px}"
         "th{background:#f4f4f4}</style></head><body>"
-        f"<h1>Deliverables Registry</h1><p>{payload['count']} deliverables · generated {payload['generated_at']}</p>"
+        f"<h1>Deliverables Registry</h1><p>{_esc(payload['count'])} deliverables · generated {_esc(payload['generated_at'])}</p>"
         "<table><thead><tr><th>id</th><th>title</th><th>kind</th><th>account</th>"
         "<th>status</th><th>tags</th><th>url</th></tr></thead><tbody>"
         f"{rows_html}</tbody></table></body></html>"

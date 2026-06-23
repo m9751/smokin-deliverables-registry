@@ -67,22 +67,30 @@ def vercel_projects():
     if not token:
         return set()
     team = os.environ.get("VERCEL_TEAM")
-    params = {"limit": 100}
-    if team:
-        params["teamId"] = team
     out = set()
-    try:
-        r = requests.get(f"{VERCEL_API}/v9/projects",
-                         headers={"Authorization": f"Bearer {token}"},
-                         params=params, timeout=15)
+    until = None  # Vercel cursor pagination: pagination.next is a timestamp passed as `until`
+    headers = {"Authorization": f"Bearer {token}"}
+    for _ in range(1000):  # hard cap: 100k projects, defends against a broken cursor loop
+        params = {"limit": 100}
+        if team:
+            params["teamId"] = team
+        if until is not None:
+            params["until"] = until
+        try:
+            r = requests.get(f"{VERCEL_API}/v9/projects", headers=headers, params=params, timeout=15)
+        except requests.RequestException as exc:
+            print(f"ERROR: Vercel API: {exc}", file=sys.stderr)
+            sys.exit(1)
         if r.status_code != 200:
             print(f"ERROR: Vercel API {r.status_code}", file=sys.stderr)
             sys.exit(1)
-        for p in r.json().get("projects", []):
+        body = r.json()
+        for p in body.get("projects", []):
             out.add(p["name"])
-    except requests.RequestException as exc:
-        print(f"ERROR: Vercel API: {exc}", file=sys.stderr)
-        sys.exit(1)
+        nxt = (body.get("pagination") or {}).get("next")
+        if not nxt:
+            break
+        until = nxt
     return out
 
 
@@ -100,43 +108,70 @@ def pages_repos():
     if not token or not owner:
         return set()
     out = set()
-    try:
-        r = requests.get(f"{GITHUB_API}/users/{owner}/repos",
-                         headers={"Authorization": f"Bearer {token}"},
-                         params={"per_page": 100}, timeout=15)
-        if r.status_code != 200:
-            # fail hard: a GitHub outage must NOT silently report "no Pages repos",
+    headers = {"Authorization": f"Bearer {token}"}
+    page = 1
+    for _ in range(1000):  # hard cap: 100k repos
+        try:
+            r = requests.get(f"{GITHUB_API}/users/{owner}/repos",
+                             headers=headers, params={"per_page": 100, "page": page}, timeout=15)
+        except requests.RequestException as exc:
+            # fail hard: an outage must NOT silently report "no Pages repos",
             # which would mask a live-but-unfiled deliverable (the bot's whole job).
+            print(f"ERROR: GitHub repos API: {exc}", file=sys.stderr)
+            sys.exit(1)
+        if r.status_code != 200:
             print(f"ERROR: GitHub repos API {r.status_code} — cannot confirm Pages coverage", file=sys.stderr)
             sys.exit(1)
-        for repo in r.json():
+        batch = r.json()
+        if not batch:
+            break
+        for repo in batch:
             if repo.get("has_pages"):
                 out.add(repo["name"])
-    except requests.RequestException as exc:
-        print(f"ERROR: GitHub repos API: {exc}", file=sys.stderr)
-        sys.exit(1)
+        if len(batch) < 100:
+            break
+        page += 1
     return out
 
 
 def open_missing_issue_ids():
-    """ids that already have an open `missing:` issue (dedup)."""
+    """ids that already have an open `missing:` issue (dedup), fully paginated.
+
+    Fails hard on API error: a silently-empty dedup set would let the bot re-open
+    issues that already exist (duplicate churn). The dedup list must be trustworthy
+    or the run must stop.
+    """
     token = os.environ.get("GITHUB_TOKEN")
     repo = os.environ.get("GITHUB_REPO")
     if not token or not repo:
         return set()
     out = set()
-    try:
-        r = requests.get(f"{GITHUB_API}/repos/{repo}/issues",
-                         headers={"Authorization": f"Bearer {token}"},
-                         params={"state": "open", "labels": "missing-deliverable", "per_page": 100},
-                         timeout=15)
-        if r.status_code == 200:
-            for issue in r.json():
-                title = issue.get("title", "")
-                if title.startswith("missing: "):
-                    out.add(title[len("missing: "):].split()[0])
-    except requests.RequestException:
-        pass
+    headers = {"Authorization": f"Bearer {token}"}
+    page = 1
+    for _ in range(1000):
+        try:
+            r = requests.get(f"{GITHUB_API}/repos/{repo}/issues", headers=headers,
+                             params={"state": "open", "labels": "missing-deliverable",
+                                     "per_page": 100, "page": page}, timeout=15)
+        except requests.RequestException as exc:
+            print(f"ERROR: GitHub issues API (dedup): {exc}", file=sys.stderr)
+            sys.exit(1)
+        if r.status_code != 200:
+            print(f"ERROR: GitHub issues API {r.status_code} (dedup) — refusing to "
+                  f"run with an unreliable dedup set", file=sys.stderr)
+            sys.exit(1)
+        batch = r.json()
+        if not batch:
+            break
+        for issue in batch:
+            title = issue.get("title", "")
+            if title.startswith("missing: "):
+                rest = title[len("missing: "):].split()
+                if rest:
+                    out.add(rest[0])
+        if len(batch) < 100:
+            break
+        page += 1
     return out
 
 
