@@ -1,9 +1,11 @@
-# Non-deliverable projects the sweep bot must NOT flag as missing.
-# These are platform/app/infra projects, not customer deliverables.
-# One id (Vercel project / Pages repo slug) per line. Lines starting with # are comments.
-smokin-territory
-cms-api-hub
-aof-eval
-deliverables-registry
-prompt-registry
-smokin-decision-web
+# Ignore list — OPERATOR-CONTROLLED ONLY.
+# The sweep does NOT auto-add anything here. Nothing is screened out unless
+# Michael explicitly says so. Empty = everything discovered becomes a candidate.
+
+# ── Seeded 2026-06-23: skipped buckets (operator-approved cut) ──
+# Registry holds live websites only (host: vercel | github-pages). Skipped:
+#   ~199 github.com commit/PR/file links — git history/provenance, not a deliverable page; no schema slot.
+#   ~20  local paths (file://, /Users/, C:\) — not findable by anyone.
+#   ~11  db links (supabase://, qdrant://, kb://) — data, not a hostable page.
+#   ~19  external/auth-walled (figma, notebooklm, hindsight, skills.sh, misc http) — not m9751-hosted.
+# Filed: 26 new unique live sites (vercel + github-pages) as status:draft, plus pre-existing harness-resource-hub.
