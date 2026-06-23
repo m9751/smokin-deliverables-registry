@@ -1,8 +1,8 @@
-# STATUS — deliverables-registry
+# STATUS — smokin-deliverables-registry
 
 ## Current phase
 
-**Pushed (private), core verified, CI blocked on billing.** Repo is live at `m9751/deliverables-registry` (private). Compiler + 3 fail-closed gates proven locally across 4 adversarial-audit rounds; core clean. Branch protection + delete-on-merge set. CI and Pages **have not run** — GitHub Actions is blocked by an account billing issue (not a code defect).
+**Public, Pages live.** Repo is at `m9751/smokin-deliverables-registry`. Compiler + 3 fail-closed gates proven locally across 4 adversarial-audit rounds; core clean. Branch protection + delete-on-merge set. Pages publishes `deliverables_latest.json` + `deliverables_latest.csv` at [m9751.github.io/smokin-deliverables-registry](https://m9751.github.io/smokin-deliverables-registry/).
 
 ## Gate results (evidence)
 
@@ -22,6 +22,6 @@
 4. **Seed/backfill** — once CI runs, sweep finds live deploys → draft stubs → one review PR. Trigger: **"seed the registry"**.
 
 ## Repo facts
-- Remote: `m9751/deliverables-registry` (private). 6 commits on `main`. Branch protection on; delete-branch-on-merge on.
+- Remote: `m9751/smokin-deliverables-registry` (public). Sibling: `m9751/smokin-tracking-registry` (signal inventory).
 - Build: `make bootstrap && make verify` (Python 3.9 local / 3.11 CI). dist/ is generated, gitignored, Action-owned.
 - Design spec: `spec/design.md` (also at `~/repos/smokin-os/docs/superpowers/specs/2026-06-22-deliverables-registry-design.md`).

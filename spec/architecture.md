@@ -1,4 +1,4 @@
-# Architecture — deliverables-registry
+# Architecture — smokin-deliverables-registry
 
 > **Valid-as-of:** 2026-06-22 (founding). Clone of the prompt-registry compiler pattern + 3 Codex-hardening gates.
 > **Falsification-pointer:** Verify `scripts/compile.py` (the actual gate implementation) before citing exact compiler behavior — this doc is the contract, the script is the source of truth.

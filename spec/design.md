@@ -3,7 +3,7 @@
 > **Date:** 2026-06-22
 > **Status:** Design approved (brainstorming) + Grok review folded + Codex adversarial review folded (3 findings fixed), pending operator spec review → writing-plans
 > **Author:** Michael Busacca + Claude (Opus 4.8)
-> **Repo (to be created):** `m9751/deliverables-registry`
+> **Repo:** `m9751/smokin-deliverables-registry` (sibling: `m9751/smokin-tracking-registry` for signal inventory)
 
 ## Compiler acceptance criteria (encodes the Codex next-steps as testable gates)
 
@@ -57,7 +57,7 @@ And because the id equals the beacon `proposal_id`, any index row bridges direct
 ## File layout
 
 ```
-deliverables-registry/
+smokin-deliverables-registry/
 ├── README.md  AGENTS.md  CLAUDE.md  STATUS.md   # Playbook A root files
 ├── Makefile  .env.example                        # Playbook B (App/service)
 ├── .github/workflows/compile-and-deploy.yml      # compile Action (SHA-pinned)
@@ -147,7 +147,8 @@ Lesson from the prompt-registry-domain-catalog spike: a manifest is consumed **o
 
 - **`deliverables_latest.json` schema** — its own JSON Schema (not just the frontmatter schema): top-level `{ generated_at, count, deliverables: [...] }`; each row carries the resolved+verified `url`, plus the provenance/safety fields the Codex fixes require: `url_source` (`vercel-api` | `formula` | `hand-typed`), `url_status` (`resolved` | `unresolved`), optional `url_error`, and `history[]` (`{ url, url_source, status, changed_at }` per past transition).
 - **`index.html` generation** — a static template rendered by `compile.py` (same owner-of-dist discipline as prompt-registry; never hand-edit `dist/`).
-- **Stable JSON endpoint** — `https://m9751.github.io/deliverables-registry/deliverables_latest.json` (the address downstream tools and `/find` fetch).
+- **Stable JSON endpoint** — `https://m9751.github.io/smokin-deliverables-registry/deliverables_latest.json` (the address downstream tools and `/find` fetch).
+- **Stable CSV export** — `https://m9751.github.io/smokin-deliverables-registry/deliverables_latest.csv`.
 - **Falsification pointer / review trigger** (prompt-registry-catalog pattern): spec is stale when the Vercel URL pattern changes, a new host type is added, or the frontmatter schema changes; review in 90 days.
 
 ## Resolved decisions (were open items)

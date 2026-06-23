@@ -1,4 +1,4 @@
-# AGENTS.md — deliverables-registry
+# AGENTS.md — smokin-deliverables-registry
 
 Claude Code deliverables librarian — maintains the source-of-truth index of every published deliverable (proposal, campaign, onboarding page, brief, tool) and its live URL.
 
