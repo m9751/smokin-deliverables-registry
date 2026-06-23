@@ -1,8 +1,48 @@
 # smokin-deliverables-registry
 
-The single source of truth for **where every published deliverable lives**.
+**Where every published deliverable lives.** Open this repo → scroll → click a link.
 
-Signal inventory (what's live/broken in tracking) lives separately in [smokin-tracking-registry](https://github.com/m9751/smokin-tracking-registry). Each proposal, campaign, onboarding page, brief, or tool that ships to Vercel or GitHub Pages gets one entry here. A GitHub Action compiles those entries into a machine-readable `deliverables_latest.json` and a human catalog, published on GitHub Pages. When an agent or operator needs the live URL for a deliverable — or wants to see what already exists to reuse — they read this registry instead of hunting. Built to solve the 2026-06-22 incident where the live deliverable `harness-resource-hub` could not be found because no live map existed.
+<!-- catalog-start -->
+**30 deliverables** · updated 2026-06-23
+Interactive: [https://m9751.github.io/smokin-deliverables-registry/](https://m9751.github.io/smokin-deliverables-registry/)
+
+| id | title | kind | account | status | url |
+| --- | --- | --- | --- | --- | --- |
+| account-povs | Account POVs Hub | proposal | none | draft | [open](https://m9751.github.io/account-povs/) |
+| anypoint-entitlement-guide | Anypoint Platform Entitlement Guide | brief | none | draft | [open](https://anypoint-entitlement-guide.vercel.app) |
+| aof-eval | AOF Eval Harness | tool | none | draft | [open](https://aof-eval.vercel.app) |
+| bcbs-payer-webinar-campaign | BCBS Payer Webinar Campaign | campaign | none | draft | [open](https://m9751.github.io/bcbs-payer-webinar-campaign/) |
+| beacon-dashboard | Beacon Engagement Dashboard | tool | none | draft | [open](https://m9751.github.io/beacon-dashboard/) |
+| cms-api-hub | CMS API Hub | tool | none | draft | [open](https://cms-api-hub.vercel.app) |
+| crossroads-solution-brief | Crossroads Solution Brief | brief | crossroads | draft | [open](https://crossroads-solution-brief.vercel.app) |
+| dataunification-ms-anmed-052026 | AnMed Data Unification | brief | anmed | draft | [open](https://dataunification-ms-anmed-052026.vercel.app) |
+| design-docs | Design Doc Skill | tool | none | draft | [open](https://m9751.github.io/design-docs/) |
+| harness-resource-hub | Harness Resource Hub | onboarding | none | draft | [open](https://harness-resource-hub.vercel.app) |
+| healthcare-agent-demo-vzrh | Healthcare Agent Demo | tool | none | draft | [open](https://healthcare-agent-demo-vzrh.vercel.app) |
+| highfive-architecture | HighFive Architecture Brief | proposal | highfive | draft | [open](https://m9751.github.io/highfive-architecture/) |
+| highfive-proposal | HighFive Proposal Deck | proposal | highfive | draft | [open](https://m9751.github.io/highfive-proposal/) |
+| idp-roi-calculator-v1 | IDP ROI Calculator v1 | tool | none | draft | [open](https://idp-roi-calculator-v1.vercel.app) |
+| idp-roi-calculator-wine | IDP ROI Calculator v2 | tool | none | draft | [open](https://idp-roi-calculator-wine.vercel.app) |
+| master-identity-architecture | Master Identity Architecture | tool | none | draft | [open](https://master-identity-architecture.vercel.app) |
+| momentum-architecture-read | Momentum Architecture Read | proposal | momentum | draft | [open](https://momentum-architecture-read.vercel.app) |
+| momentum-architecture-read-v3 | Momentum Architecture Read v3 | proposal | momentum | draft | [open](https://momentum-architecture-read-v3.vercel.app) |
+| mulesoft-claude-cursor-onboarding | MuleSoft Claude Code Onboarding Kit | onboarding | none | draft | [open](https://mulesoft-claude-cursor-onboarding.vercel.app) |
+| musc-integration-abm | MUSC Integration ABM Campaign | campaign | musc | draft | [open](https://m9751.github.io/musc-integration-abm/) |
+| musc-video | MUSC MuleSoft Walkthrough Video | brief | musc | draft | [open](https://musc-video.vercel.app) |
+| number-one-son-for-dad | Number One Son | tool | none | draft | [open](https://number-one-son-for-dad.vercel.app) |
+| payer-data-360-campaign | Payer Data 360 Webinar Campaign | campaign | none | draft | [open](https://m9751.github.io/payer-data-360-campaign/) |
+| proposal-intel | Proposal Intelligence Dashboard | tool | none | draft | [open](https://m9751.github.io/proposal-intel/) |
+| q1-idp-top-50 | Q1 IDP Top 50 Campaign Page | campaign | none | draft | [open](https://m9751.github.io/q1-idp-top-50/) |
+| smokin-decision | Smokin Decision Web UI | tool | none | draft | [open](https://smokin-decision.vercel.app) |
+| smokin-territory | SmokinTerritory Heatmap | tool | none | draft | [open](https://smokin-territory.vercel.app) |
+| st-architecture | SmokinTerritory Architecture Reference | tool | none | draft | [open](https://m9751.github.io/st-architecture/) |
+| st-cheatsheet | Command Cheat Sheet | tool | none | draft | [open](https://m9751.github.io/st-cheatsheet/) |
+| st-top50 | Territory Top 50 Dashboard | tool | none | draft | [open](https://st-top50.vercel.app) |
+<!-- catalog-end -->
+
+Signal inventory (what's live/broken in tracking): [smokin-tracking-registry](https://github.com/m9751/smokin-tracking-registry)
+
+---
 
 ## Reading order
 
@@ -18,12 +58,12 @@ Signal inventory (what's live/broken in tracking) lives separately in [smokin-tr
 ## Quick start
 
 ```bash
-git clone <repo>
+git clone https://github.com/m9751/smokin-deliverables-registry.git
 make bootstrap   # install Python deps (pyyaml, jsonschema, requests)
 make verify      # build + validate — exit 0 = ready
 ```
 
-`make verify` compiles `deliverables/**/*.md` into `dist/`. To pre-register a draft before its URL is live, set `status: draft` in the frontmatter (the URL gate is warn-only for drafts, fail-closed for `live`).
+`make verify` compiles `deliverables/**/*.md` into `dist/` and refreshes the catalog table in this README. To pre-register a draft before its URL is live, set `status: draft` in the frontmatter (the URL gate is warn-only for drafts, fail-closed for `live`).
 
 ## Boundary — what is NOT here
 
@@ -35,7 +75,7 @@ make verify      # build + validate — exit 0 = ready
 ## For Claude landing here (read before editing)
 
 1. **Pull first.** Mac and Win11 both clone this repo — always `git pull` before editing to avoid silent drift.
-2. **Edit the `.md`, never `dist/`.** You edit a deliverable's frontmatter file under `deliverables/<kind>/<id>.md`; the compiler regenerates `dist/deliverables_latest.json` + `dist/index.html`. Hand-editing `dist/` is overwritten on the next build.
+2. **Edit the `.md`, never `dist/`.** You edit a deliverable's frontmatter file under `deliverables/<kind>/<id>.md`; the compiler regenerates `dist/` and the README catalog. Hand-editing `dist/` is overwritten on the next build.
 3. **`status: live` is fail-closed.** A `live` entry whose URL cannot be resolved from the Vercel API or fails HTTP-verify makes the build FAIL. Use `status: draft` to pre-register. Never force a `live` URL you have not verified.
 4. **Branch + PR for every change**, even one-liners — PRs are the audit trail.
 
@@ -50,6 +90,4 @@ CI runs `make bootstrap && make verify`. If CI is red:
 
 `dist/deliverables_latest.json`, `dist/deliverables_latest.csv`, and `dist/index.html` are generated by `scripts/compile.py` from `deliverables/**/*.md`. They are gitignored and built by CI on deploy — never committed to `main`. Regenerate locally with `make build`.
 
-Published: [https://m9751.github.io/smokin-deliverables-registry/](https://m9751.github.io/smokin-deliverables-registry/)
-
-> Last verified: 2026-06-22, Mac (Python 3.9.6) — `make verify` ran twice, both exit 0, byte-identical output (Step 13 command-parity PASS).
+The **README catalog table** (between `<!-- catalog-start -->` / `<!-- catalog-end -->`) is also compiler-owned — commit it when you add or change deliverables.
