@@ -4,8 +4,8 @@ title: Master Identity Architecture
 host: vercel
 kind: tool
 account: none
-tags: [seed]
-summary: Identity stack architecture reference — Mint/Carry/Activate, MRN bridge, MPI.
+tags: [seed,identity]
+summary: Master patient-identity architecture reference (MuleSoft MDM).
 status: draft
 created: 2026-06-23
 ---
