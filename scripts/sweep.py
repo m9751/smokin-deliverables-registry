@@ -102,6 +102,31 @@ def _owner_from_repo_env():
     return owner or None
 
 
+def _authenticated_login(headers):
+    """The login of the token's own account, or None on failure."""
+    try:
+        r = requests.get(f"{GITHUB_API}/user", headers=headers, timeout=15)
+        if r.status_code == 200:
+            return r.json().get("login")
+    except requests.RequestException:
+        pass
+    return None
+
+
+def _pages_endpoint(owner, headers):
+    """
+    Pick the listing endpoint that returns PUBLIC + PRIVATE repos the token can see.
+    - owner == authenticated user  -> /user/repos?affiliation=owner  (public + private)
+    - otherwise (org)              -> /orgs/{owner}/repos?type=all    (public + private the token can see)
+    The bare /users/{owner}/repos path returns PUBLIC ONLY, which would silently
+    drop private/org Pages deliverables — the exact safety-net hole this avoids.
+    """
+    me = _authenticated_login(headers)
+    if me and me.lower() == owner.lower():
+        return f"{GITHUB_API}/user/repos", {"affiliation": "owner"}
+    return f"{GITHUB_API}/orgs/{owner}/repos", {"type": "all"}
+
+
 def pages_repos():
     token = os.environ.get("GITHUB_TOKEN")
     owner = _owner_from_repo_env()
@@ -109,23 +134,29 @@ def pages_repos():
         return set()
     out = set()
     headers = {"Authorization": f"Bearer {token}"}
+    url, base_params = _pages_endpoint(owner, headers)
     page = 1
     for _ in range(1000):  # hard cap: 100k repos
+        params = dict(base_params, per_page=100, page=page)
         try:
-            r = requests.get(f"{GITHUB_API}/users/{owner}/repos",
-                             headers=headers, params={"per_page": 100, "page": page}, timeout=15)
+            r = requests.get(url, headers=headers, params=params, timeout=15)
         except requests.RequestException as exc:
             # fail hard: an outage must NOT silently report "no Pages repos",
             # which would mask a live-but-unfiled deliverable (the bot's whole job).
             print(f"ERROR: GitHub repos API: {exc}", file=sys.stderr)
             sys.exit(1)
         if r.status_code != 200:
-            print(f"ERROR: GitHub repos API {r.status_code} — cannot confirm Pages coverage", file=sys.stderr)
+            print(f"ERROR: GitHub repos API {r.status_code} at {url} — cannot confirm Pages coverage",
+                  file=sys.stderr)
             sys.exit(1)
         batch = r.json()
         if not batch:
             break
         for repo in batch:
+            # /user/repos returns repos across all owners the user can access; keep only this owner's
+            repo_owner = (repo.get("owner") or {}).get("login", "")
+            if repo_owner.lower() != owner.lower():
+                continue
             if repo.get("has_pages"):
                 out.add(repo["name"])
         if len(batch) < 100:
