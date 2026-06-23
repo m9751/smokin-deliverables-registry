@@ -46,6 +46,10 @@ OUT_SCHEMA_PATH = REPO_ROOT / "scripts" / "output_schema.json"
 LATEST_JSON = DIST_DIR / "deliverables_latest.json"
 LATEST_CSV = DIST_DIR / "deliverables_latest.csv"
 INDEX_HTML = DIST_DIR / "index.html"
+README_PATH = REPO_ROOT / "README.md"
+CATALOG_START = "<!-- catalog-start -->"
+CATALOG_END = "<!-- catalog-end -->"
+PAGES_CATALOG = "https://m9751.github.io/smokin-deliverables-registry/"
 
 SCHEMA_VERSION = "1.0"
 PAGES_BASE = "https://m9751.github.io"
@@ -309,6 +313,7 @@ def write_outputs(payload: dict) -> None:
     )
     _write_deliverables_csv(payload)
     INDEX_HTML.write_text(render_html(payload), encoding="utf-8")
+    _update_readme_catalog(payload)
 
 
 def _write_deliverables_csv(payload: dict) -> None:
@@ -343,6 +348,54 @@ def _link_cell(d: dict) -> str:
 
 def _esc(value) -> str:
     return html.escape(str(value), quote=True)
+
+
+def _md_cell(value) -> str:
+    text = str(value).replace("|", "\\|")
+    return text.replace("\n", " ")
+
+
+def render_catalog_md(payload: dict) -> str:
+    lines = [
+        f"**{payload['count']} deliverables** · updated {payload['generated_at']}",
+        f"Interactive: [{PAGES_CATALOG}]({PAGES_CATALOG})",
+        "",
+        "| id | title | kind | account | status | url |",
+        "| --- | --- | --- | --- | --- | --- |",
+    ]
+    for d in payload["deliverables"]:
+        url = d.get("url") or "—"
+        if url != "—" and re.match(r"^https?://", url, re.IGNORECASE):
+            url_cell = f"[open]({url})"
+        else:
+            url_cell = "—"
+        lines.append(
+            "| {id} | {title} | {kind} | {account} | {status} | {url} |".format(
+                id=_md_cell(d["id"]),
+                title=_md_cell(d["title"]),
+                kind=_md_cell(d["kind"]),
+                account=_md_cell(d.get("account", "none")),
+                status=_md_cell(d["status"]),
+                url=url_cell,
+            )
+        )
+    return "\n".join(lines) + "\n"
+
+
+def _update_readme_catalog(payload: dict) -> None:
+    if not README_PATH.exists():
+        return
+    readme = README_PATH.read_text(encoding="utf-8")
+    if CATALOG_START not in readme or CATALOG_END not in readme:
+        _warn("README.md missing catalog markers — skipping catalog refresh")
+        return
+    before, rest = readme.split(CATALOG_START, 1)
+    _, after = rest.split(CATALOG_END, 1)
+    catalog = render_catalog_md(payload)
+    README_PATH.write_text(
+        f"{before}{CATALOG_START}\n{catalog}{CATALOG_END}{after}",
+        encoding="utf-8",
+    )
 
 
 def render_html(payload: dict) -> str:
