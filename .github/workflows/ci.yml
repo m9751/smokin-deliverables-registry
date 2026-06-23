@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7          # GitHub-owned — exempt from SHA-pin (github/AGENTS.md rule 2)
-      - uses: actions/setup-python@v5      # GitHub-owned — exempt
+      - uses: actions/setup-python@v6      # GitHub-owned — exempt
         with:
           python-version: "3.11"
       - name: Bootstrap
@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
       - name: Bootstrap
