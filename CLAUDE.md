@@ -1,3 +1,5 @@
+@AGENTS.md
+
 # CLAUDE.md — smokin-deliverables-registry
 
 Source-of-truth index of published deliverables and their live URLs.

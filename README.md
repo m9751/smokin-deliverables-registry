@@ -46,8 +46,11 @@ Signal inventory (what's live/broken in tracking): [smokin-tracking-registry](ht
 
 ## Reading order
 
+> **STOP:** Read [AGENTS.md](AGENTS.md) before any edit, search, or recommendation.
+
 | If you are asking… | Start here |
 |---|---|
+| "I was given a task / told to change something" | [`AGENTS.md`](AGENTS.md) — read before acting |
 | "How do I compile and verify a change?" | **Quick start** below → `make verify` |
 | "How do I add or edit a deliverable entry?" | [`AGENTS.md`](AGENTS.md) |
 | "Why does this repo exist / what must not be repeated?" | [`spec/lessons.md`](spec/lessons.md) |
@@ -72,12 +75,13 @@ make verify      # build + validate — exit 0 = ready
 - **Not a replacement for `/find`.** `/find` answers "did I ever build X?" across 4 Supabase tables. This registry answers "where is X live, and what's reusable in it." `/find` reads this registry's JSON as a 5th source.
 - **`dist/` is generated** — never hand-edit; the compiler owns it (see Generated files).
 
-## For Claude landing here (read before editing)
+## For agents landing here (read before any action)
 
-1. **Pull first.** Mac and Win11 both clone this repo — always `git pull` before editing to avoid silent drift.
-2. **Edit the `.md`, never `dist/`.** You edit a deliverable's frontmatter file under `deliverables/<kind>/<id>.md`; the compiler regenerates `dist/` and the README catalog. Hand-editing `dist/` is overwritten on the next build.
-3. **`status: live` is fail-closed.** A `live` entry whose URL cannot be resolved from the Vercel API or fails HTTP-verify makes the build FAIL. Use `status: draft` to pre-register. Never force a `live` URL you have not verified.
-4. **Branch + PR for every change**, even one-liners — PRs are the audit trail.
+1. **Read AGENTS.md before any action.** Before editing, searching, recommending, or querying anything in this repo, read [`AGENTS.md`](AGENTS.md) fully. This is a gate, not a reading-order option.
+2. **Pull before editing.** Mac and Win11 both clone this repo — always `git pull` before editing to avoid silent drift.
+3. **Edit the `.md`, never `dist/`.** You edit a deliverable's frontmatter file under `deliverables/<kind>/<id>.md`; the compiler regenerates `dist/` and the README catalog. Hand-editing `dist/` is overwritten on the next build.
+4. **`status: live` is fail-closed.** A `live` entry whose URL cannot be resolved from the Vercel API or fails HTTP-verify makes the build FAIL. Use `status: draft` to pre-register. Never force a `live` URL you have not verified.
+5. **Branch + PR for every change**, even one-liners — PRs are the audit trail.
 
 ## CI contract
 
