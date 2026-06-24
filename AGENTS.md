@@ -24,12 +24,13 @@ Signal inventory lives in **[smokin-tracking-registry](https://github.com/m9751/
 
 ## Primary task — add or edit a deliverable entry
 
-1. `git pull && git checkout -b feat/<id>`
-2. Create/edit `deliverables/<kind>/<id>.md` where `id` = the Vercel project name = the Pages repo name = the beacon `proposal_id` (one slug, all four).
-3. Fill frontmatter: `id, title, host, kind, status, created` (required); `account, tags, summary` (for reuse); `url` only when `host: custom`.
-4. New entries start `status: draft`. Promote to `live` only when `summary` is real (not `TODO`), `account` is a valid slug or `none`, and there is ≥1 `tag`.
-5. `make verify` — must exit 0. A `live` entry whose URL fails resolution/verify will FAIL here by design.
-6. `git add deliverables/<kind>/<id>.md` (by name), commit, push, open PR.
+1. **Confirm edit surface and slug rule** (this file): path is `deliverables/<kind>/<id>.md` where `kind` ∈ {brief, campaign, onboarding, proposal, tool}; `id` = Vercel project = Pages repo = beacon `proposal_id` (one slug). `url` only when `host: custom`.
+2. `git pull && git checkout -b feat/<id>`
+3. Create/edit `deliverables/<kind>/<id>.md` per step 1.
+4. Fill frontmatter: `id, title, host, kind, status, created` (required); `account, tags, summary` (for reuse); `url` only when `host: custom`.
+5. New entries start `status: draft`. Promote to `live` only when `summary` is real (not `TODO`), `account` is a valid slug or `none`, and there is ≥1 `tag`.
+6. `make verify` — must exit 0. A `live` entry whose URL fails resolution/verify will FAIL here by design.
+7. `git add deliverables/<kind>/<id>.md` (by name), commit, push, open PR.
 
 ## NEVER
 
