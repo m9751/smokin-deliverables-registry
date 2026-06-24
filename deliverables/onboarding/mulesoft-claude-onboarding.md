@@ -7,6 +7,6 @@ kind: onboarding
 account: none
 tags: [mulesoft, claude-code, onboarding]
 summary: Static HTML onboarding guide for MuleSoft + Claude Code / Cursor setup via GitHub Pages.
-status: active
+status: live
 created: 2026-06-24
 ---
