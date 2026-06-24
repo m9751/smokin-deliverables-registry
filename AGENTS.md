@@ -2,6 +2,8 @@
 
 Claude Code deliverables librarian — maintains the source-of-truth index of every published deliverable (proposal, campaign, onboarding page, brief, tool) and its live URL.
 
+**Cold start:** Read this file fully before any edit, search, or recommendation about this repo.
+
 > **Authority:** Files in this repo are the source of truth. If memory or recall.md conflicts with what you read here, trust what you read. Reconcile the stale memory before proceeding — do not proceed on the stale version. Disk (this repo) = truth → smokin-os indexes it → MEMORY.md caches it (reconcile to disk, never override).
 
 ## Spec navigation

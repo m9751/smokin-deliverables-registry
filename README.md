@@ -3,7 +3,7 @@
 **Where every published deliverable lives.** Open this repo → scroll → click a link.
 
 <!-- catalog-start -->
-**30 deliverables** · updated 2026-06-23
+**40 deliverables** · updated 2026-06-24
 Interactive: [https://m9751.github.io/smokin-deliverables-registry/](https://m9751.github.io/smokin-deliverables-registry/)
 
 | id | title | kind | account | status | url |
@@ -15,6 +15,7 @@ Interactive: [https://m9751.github.io/smokin-deliverables-registry/](https://m97
 | beacon-dashboard | Beacon Engagement Dashboard | tool | none | draft | [open](https://m9751.github.io/beacon-dashboard/) |
 | cms-api-hub | CMS API Hub | tool | none | draft | [open](https://cms-api-hub.vercel.app) |
 | crossroads-solution-brief | Crossroads Solution Brief | brief | crossroads | draft | [open](https://crossroads-solution-brief.vercel.app) |
+| dad-med-report | Dad Medical Report | tool | none | draft | [open](https://dad-med-report.vercel.app) |
 | dataunification-ms-anmed-052026 | AnMed Data Unification | brief | anmed | draft | [open](https://dataunification-ms-anmed-052026.vercel.app) |
 | design-docs | Design Doc Skill | tool | none | draft | [open](https://m9751.github.io/design-docs/) |
 | harness-resource-hub | Harness Resource Hub | onboarding | none | draft | [open](https://harness-resource-hub.vercel.app) |
@@ -24,20 +25,29 @@ Interactive: [https://m9751.github.io/smokin-deliverables-registry/](https://m97
 | idp-roi-calculator-v1 | IDP ROI Calculator v1 | tool | none | draft | [open](https://idp-roi-calculator-v1.vercel.app) |
 | idp-roi-calculator-wine | IDP ROI Calculator v2 | tool | none | draft | [open](https://idp-roi-calculator-wine.vercel.app) |
 | master-identity-architecture | Master Identity Architecture | tool | none | draft | [open](https://master-identity-architecture.vercel.app) |
+| master-identity-architecture-deploy | Master Identity Architecture (deploy) | tool | none | draft | [open](https://master-identity-architecture-deploy.vercel.app) |
 | momentum-architecture-read | Momentum Architecture Read | proposal | momentum | draft | [open](https://momentum-architecture-read.vercel.app) |
 | momentum-architecture-read-v3 | Momentum Architecture Read v3 | proposal | momentum | draft | [open](https://momentum-architecture-read-v3.vercel.app) |
 | mulesoft-claude-cursor-onboarding | MuleSoft Claude Code Onboarding Kit | onboarding | none | draft | [open](https://mulesoft-claude-cursor-onboarding.vercel.app) |
+| mulesoft-claude-onboarding | MuleSoft Claude Code Onboarding Guide | onboarding | none | live | [open](https://m9751.github.io/mulesoft-claude-onboarding/) |
 | musc-integration-abm | MUSC Integration ABM Campaign | campaign | musc | draft | [open](https://m9751.github.io/musc-integration-abm/) |
 | musc-video | MUSC MuleSoft Walkthrough Video | brief | musc | draft | [open](https://musc-video.vercel.app) |
 | number-one-son-for-dad | Number One Son | tool | none | draft | [open](https://number-one-son-for-dad.vercel.app) |
 | payer-data-360-campaign | Payer Data 360 Webinar Campaign | campaign | none | draft | [open](https://m9751.github.io/payer-data-360-campaign/) |
 | proposal-intel | Proposal Intelligence Dashboard | tool | none | draft | [open](https://m9751.github.io/proposal-intel/) |
 | q1-idp-top-50 | Q1 IDP Top 50 Campaign Page | campaign | none | draft | [open](https://m9751.github.io/q1-idp-top-50/) |
+| sam-uei-resolver | SAM UEI Resolver | tool | none | draft | [open](https://sam-uei-resolver.vercel.app) |
 | smokin-decision | Smokin Decision Web UI | tool | none | draft | [open](https://smokin-decision.vercel.app) |
 | smokin-territory | SmokinTerritory Heatmap | tool | none | draft | [open](https://smokin-territory.vercel.app) |
 | st-architecture | SmokinTerritory Architecture Reference | tool | none | draft | [open](https://m9751.github.io/st-architecture/) |
 | st-cheatsheet | Command Cheat Sheet | tool | none | draft | [open](https://m9751.github.io/st-cheatsheet/) |
 | st-top50 | Territory Top 50 Dashboard | tool | none | draft | [open](https://st-top50.vercel.app) |
+| v0-campaignhub-marketing-campaig | v0 CampaignHub Marketing | tool | none | draft | [open](https://v0-campaignhub-marketing-campaig.vercel.app) |
+| v0-campaignhub-marketing-campaig-ay | v0 CampaignHub Marketing (ay) | tool | none | draft | [open](https://v0-campaignhub-marketing-campaig-ay.vercel.app) |
+| v0-campaignhub-marketing-campaig-jp | v0 CampaignHub Marketing (jp) | tool | none | draft | [open](https://v0-campaignhub-marketing-campaig-jp.vercel.app) |
+| v0-campaignhub-marketing-campaig-zc | v0 CampaignHub Marketing (zc) | tool | none | draft | [open](https://v0-campaignhub-marketing-campaig-zc.vercel.app) |
+| whiskey-down | Whiskey Down | tool | none | draft | [open](https://whiskey-down.vercel.app) |
+| whiskey-down-next | Whiskey Down Next | tool | none | draft | [open](https://whiskey-down-next.vercel.app) |
 <!-- catalog-end -->
 
 Signal inventory (what's live/broken in tracking): [smokin-tracking-registry](https://github.com/m9751/smokin-tracking-registry)
@@ -46,8 +56,11 @@ Signal inventory (what's live/broken in tracking): [smokin-tracking-registry](ht
 
 ## Reading order
 
+> **STOP:** Read [AGENTS.md](AGENTS.md) before any edit, search, or recommendation.
+
 | If you are asking… | Start here |
 |---|---|
+| "I was given a task / told to change something" | [`AGENTS.md`](AGENTS.md) — read before acting |
 | "How do I compile and verify a change?" | **Quick start** below → `make verify` |
 | "How do I add or edit a deliverable entry?" | [`AGENTS.md`](AGENTS.md) |
 | "Why does this repo exist / what must not be repeated?" | [`spec/lessons.md`](spec/lessons.md) |
@@ -72,12 +85,13 @@ make verify      # build + validate — exit 0 = ready
 - **Not a replacement for `/find`.** `/find` answers "did I ever build X?" across 4 Supabase tables. This registry answers "where is X live, and what's reusable in it." `/find` reads this registry's JSON as a 5th source.
 - **`dist/` is generated** — never hand-edit; the compiler owns it (see Generated files).
 
-## For Claude landing here (read before editing)
+## For agents landing here (read before any action)
 
-1. **Pull first.** Mac and Win11 both clone this repo — always `git pull` before editing to avoid silent drift.
-2. **Edit the `.md`, never `dist/`.** You edit a deliverable's frontmatter file under `deliverables/<kind>/<id>.md`; the compiler regenerates `dist/` and the README catalog. Hand-editing `dist/` is overwritten on the next build.
-3. **`status: live` is fail-closed.** A `live` entry whose URL cannot be resolved from the Vercel API or fails HTTP-verify makes the build FAIL. Use `status: draft` to pre-register. Never force a `live` URL you have not verified.
-4. **Branch + PR for every change**, even one-liners — PRs are the audit trail.
+1. **Read AGENTS.md before any action.** Before editing, searching, recommending, or querying anything in this repo, read [`AGENTS.md`](AGENTS.md) fully. This is a gate, not a reading-order option.
+2. **Pull before editing.** Mac and Win11 both clone this repo — always `git pull` before editing to avoid silent drift.
+3. **Edit the `.md`, never `dist/`.** You edit a deliverable's frontmatter file under `deliverables/<kind>/<id>.md`; the compiler regenerates `dist/` and the README catalog. Hand-editing `dist/` is overwritten on the next build.
+4. **`status: live` is fail-closed.** A `live` entry whose URL cannot be resolved from the Vercel API or fails HTTP-verify makes the build FAIL. Use `status: draft` to pre-register. Never force a `live` URL you have not verified.
+5. **Branch + PR for every change**, even one-liners — PRs are the audit trail.
 
 ## CI contract
 
